@@ -4,6 +4,7 @@ import NavBar from './components/navbar/NavBar';
 import Teams from './components/teams/Teams';
 import Calendar from './components/calendar/Calendar';
 import Error from './components/error/Error';
+import Footer from './components/footer/Footer';
 
 class App extends Component {
   render() {
@@ -16,6 +17,7 @@ class App extends Component {
           <Route path="/calendar" component={Calendar} />
           <Route component={() => <Error message="We couldn't find what you're looking for." />} />
         </Switch>
+        <Footer />
       </Router>
     );
   }
