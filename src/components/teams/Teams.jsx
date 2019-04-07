@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Error from '../error/Error';
 import './teams.scss';
 
 class Teams extends Component {
@@ -10,12 +11,22 @@ class Teams extends Component {
 
   async componentDidMount() {
     try {
-      const res = await fetch('http://localhost:3030/teams');
+      const res = await fetch('http://localhost:3030/teams/');
       const jsonData = await res.json();
 
-      setTimeout(()=>{ // Just for the thrills
-        this.setState({ teams: jsonData, loaded: true });
-      }, (Math.random() * 1000) + 500);
+      if (jsonData.error) {
+        console.log(jsonData);
+        let error = new Error();
+        error.status = jsonData.error.status || 500;
+        error.message = jsonData.error.message || "There was an error fetching the data";
+        console.log()
+        throw error;
+      }
+      else {
+        setTimeout(()=>{ // Just for the thrills
+          this.setState({ teams: jsonData, loaded: true });
+        }, (Math.random() * 1000) + 500);
+      }
     }
     catch(err) {
       console.error(err);
@@ -26,7 +37,7 @@ class Teams extends Component {
   render() {
     const { teams, loaded, error } = this.state;
     if (error) {
-      return <h2>Sorry, There's been an error loading our data.</h2>
+      return <Error message={error.message ? error.message : null} />
     }
     if (loaded) {
       const teamsWithImages = teams.with_images;
@@ -56,7 +67,9 @@ class Teams extends Component {
     }
     else {
       return (
-        <p>Loading teams...</p>
+        <div className="loading">
+          <p>Loading teams...</p>
+        </div>
       );
     }
   }
