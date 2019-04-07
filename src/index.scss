@@ -1,5 +1,12 @@
 * {
+  -webkit-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  border: none;
   box-sizing: border-box;
+  margin: 0px;
+  outline: none;
+  padding: 0px;
 }
 
 body {
@@ -32,7 +39,6 @@ code {
 
   &__image {
     max-height: 300px;
-
   }
 }
 
