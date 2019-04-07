@@ -30,18 +30,6 @@ code {
   margin: 30px auto;
 }
 
-.error {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 70px);
-  justify-content: center;
-
-  &__image {
-    max-height: 300px;
-  }
-}
-
 .loading {
   align-items: center;
   display: flex;

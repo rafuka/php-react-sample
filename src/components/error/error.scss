@@ -1,0 +1,11 @@
+.error {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 160px);
+  justify-content: center;
+
+  &__image {
+    max-height: 300px;
+  }
+}
