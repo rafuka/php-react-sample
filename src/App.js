@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-do
 import NavBar from './components/navbar/NavBar';
 import Teams from './components/teams/Teams';
 import Calendar from './components/calendar/Calendar';
+import Error from './components/error/Error';
 
 class App extends Component {
   render() {
@@ -13,6 +14,7 @@ class App extends Component {
           <Route path="/" exact component={() => <Redirect to="/teams" />} />
           <Route path="/teams" component={Teams} />
           <Route path="/calendar" component={Calendar} />
+          <Route component={() => <Error message="We couldn't find what you're looking for." />} />
         </Switch>
       </Router>
     );
