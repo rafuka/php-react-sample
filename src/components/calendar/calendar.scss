@@ -1,0 +1,81 @@
+.calendar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  &__day {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 25px;
+    position: relative;
+    width: 315px;
+  }
+
+  &__day-title {
+    position: absolute;
+    top: -45px;
+    left: 10px;
+  }
+
+  &__day-matches {
+    border-radius: 5px;
+    box-shadow: 0px 2px 12px -2px rgba(0,0,0,0.6);
+    overflow: hidden;
+    width: 100%;
+  }
+
+  &__match {
+    display: flex;
+    flex-wrap: nowrap;
+    padding: 11px;
+    position: relative;
+    width: 100%;
+
+    &:after {
+      content: 'vs';
+      display: inline-block;
+      font-size: .8em;
+      font-weight: bold;
+      left: calc(50% - 8px);
+      position: absolute;
+      right: -12px;
+      text-align: center;
+      width: 16px; 
+    }
+
+    &:nth-child(even) {
+      background-color: lightblue;
+    }
+
+    &:nth-child(odd) {
+      background-color: darken(lightblue, 10%);
+    }
+
+    &:last-child {
+      &:after {
+        display: none;
+      }
+    }
+  }
+
+  &__team {
+    flex-basis: 50%;
+    font-size: .9em;
+    
+    &.left {
+      margin-right: 13px;
+      text-align: right;
+    }
+
+    &.right {
+      margin-left: 13px;
+      text-align: left;
+    }
+
+    &.resting {
+      font-weight: bold;
+    }
+  }
+}

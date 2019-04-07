@@ -1,0 +1,44 @@
+.navbar {
+  align-items: center;
+  box-shadow: 0px 1px 3px rgba(0,0,0,0.3);
+  display: flex;
+  height: 70px;
+  justify-content: center;
+  padding: 15px;
+  position: relative;
+
+  a {
+    border-radius: 4px;
+    color: black;
+    margin: 0px 15px;
+    padding: 8px 0px;
+    text-decoration: none;
+    transition: all .3s ease;
+    width: 85px;
+
+    &:first-child {
+      text-align: right;
+    }
+
+    &:hover {
+      color: lightblue;
+    }
+
+    &.active {
+      color: lightblue;
+    }
+  }
+
+  &:after {
+    background-color: black;
+    border-radius: 100%;
+    content: '';
+    display: block;
+    height: 40px;
+    left: calc(50% - 1px);
+    position: absolute;
+    top: calc(50% - 20px);
+    width: 2px;
+  }
+  
+}
