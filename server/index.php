@@ -59,13 +59,45 @@ else if ($method == "POST") {
   $action = $uri[1];
   if ($action != NULL) {
     if ($action == "/create") {
-      // Takes raw data from the request
+      // Takes data from the request
       $json = file_get_contents('php://input');
-      echo $json;
-      // Converts it into a PHP object
-      //$data = json_decode($json);
+      $team_data = json_decode($json, true);
+      
+      try {
+        $team_names = $teams->getNames();
+        if (in_array($team_data["name"], $team_names)) {
+          $err = array(
+            "error" => array(
+              "status" => "500",
+              "message" => "A team already exists with that name."
+            )
+          );
+        
+          echo json_encode($err);
+          exit();
+        }
+        else {
+          $qr = $teams->create($team_data["name"], $team_data["imgUrl"]);
+          
+        }
+        
+      }
+      catch(Exception $e) {
+        $err = array(
+          "error" => array(
+            "status" => "500",
+            "message" => "There was a problem reading the database."
+          )
+        );
+      
+        echo json_encode($err);
+        exit();
+      }
+
+      if ($qr) {
+        echo '{"success":"Team ' . $team_data["name"] . ' created successfully!"}';
+      }
     }
-    
   }
   else {
     $err = array(
@@ -79,8 +111,5 @@ else if ($method == "POST") {
     exit();
   }
 }
-
-
-
 ?>
 

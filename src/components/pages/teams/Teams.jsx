@@ -14,7 +14,42 @@ class Teams extends Component {
     }
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.getTeams();
+  }
+
+  toggleAddTeamModal = (e, data) => {
+
+  }
+
+  handleTeamAdd = async (e) => {
+    const { addTeamData } = this.state;
+    const teamCreated = await this.createTeam(addTeamData);
+
+    if (teamCreated) {
+      console.log(teamCreated.success);
+
+      this.setState({
+        addTeamData: {
+          name: '',
+          imgUrl: ''
+        }},
+        this.getTeams
+      );
+    }
+  }
+
+  handleInputChange = e => {
+    const { name, value } = e.target;
+    let { addTeamData } = this.state;
+
+    if (name === "team-name") addTeamData.name = value;
+    if (e.target.name === "team-img-url") addTeamData.imgUrl = value;
+
+    this.setState({ addTeamData });
+  }
+
+  getTeams = async () => {
     try {
       const res = await fetch('http://localhost:3030/teams/');
       const jsonData = await res.json();
@@ -37,22 +72,18 @@ class Teams extends Component {
     }
   }
 
-  toggleAddTeamModal = (e, data) => {
-
-  }
-
-  handleTeamAdd = async (e) => {
-    const { addTeamData } = this.state;
+  createTeam = async (data) => {
     try {
       let res = await fetch('http://localhost:3030/teams/create', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(addTeamData)
+        body: JSON.stringify(data)
       });
 
       let jsonData = await res.json();
+
       if (jsonData.error) {
         let error = new Error();
         error.status = jsonData.error.status || 500;
@@ -60,25 +91,13 @@ class Teams extends Component {
         throw error;
       }
       else {
-        
+        return jsonData;
       }
-      console.log('server response:', jsonData);
     }
     catch(err) {
       console.error(err);
       this.setState({ error: err });
     }
-    
-  }
-
-  handleInputChange = e => {
-    const { name, value } = e.target;
-    let { addTeamData } = this.state;
-
-    if (name === "team-name") addTeamData.name = value;
-    if (e.target.name === "team-img-url") addTeamData.imgUrl = value;
-
-    this.setState({ addTeamData });
   }
 
   render() {
@@ -125,6 +144,7 @@ class Teams extends Component {
                     className="team-add__input-field"
                     type="text"
                     name="team-name"
+                    value={this.state.addTeamData.name}
                     onChange={this.handleInputChange}
                   />
                 </div>
@@ -140,6 +160,7 @@ class Teams extends Component {
                     className="team-add__input-field"
                     type="text"
                     name="team-img-url"
+                    value={this.state.addTeamData.imgUrl}
                     onChange={this.handleInputChange}
                   />
                 </div>

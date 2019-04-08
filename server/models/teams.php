@@ -69,12 +69,30 @@ class Teams {
     return $team_names;
   }
 
+  public function create($name, $image_url) {
+    $query = "INSERT INTO `teams` (`name`) VALUES('" . $name . "')";
+    $query_results = $this->db->query($query);
+
+    $this->checkForQueryErrors($query, $query_results);
+
+    $query = "SELECT teams.id FROM teams WHERE teams.name='".$name."'";
+    $query_results = $this->db->query($query);
+
+    $this->checkForQueryErrors($query, $query_results);
+    $row = $query_results->fetch_assoc();
+    $id = $row["id"];
+
+    $query = "INSERT INTO `team_logos` (`url`, `team_id`) VALUES ('" . $image_url . "', '".$id."')";
+    $query_results = $this->db->query($query);
+
+    $this->checkForQueryErrors($query, $query_results);
+
+    return $query_results;
+  }
+
   private function checkForQueryErrors($query, $query_results) {
     if (!$query_results) {
-      echo "Error executing query: " . $query . "\n";
-      echo "Errno: " . $this->mysqli->errno . "\n";
-      echo "Error: " . $this->mysqli->error . "\n";
-      exit;
+      throw new Exception("Error executing query: " . $query . "\nErrno: " . $this->db->errno . "\nError: " . $this->db->error . "\n");
     }
   }
 }
