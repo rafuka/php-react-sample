@@ -8,11 +8,13 @@ class Modal extends Component {
 
   handleToggle = (e) => {
     e.preventDefault();
+    e.persist();
+
     this.setState(
       ({ visible }) => ({ visible: !visible }),
       () => {
         const { onToggle } = this.props;
-        if (onToggle) onToggle(this.state.visible)  
+        if (onToggle) onToggle(e, this.state.visible)  
       }
     );
   }
@@ -25,7 +27,11 @@ class Modal extends Component {
         </Modal.Toggler>
         <Modal.Body visible={this.state.visible}>
           <Modal.Toggler handleToggle={this.handleToggle}>
-            {({toggle}) => <button onClick={toggle} className="modal__close">X</button>}
+            {({toggle}) =>
+              <button
+                className="modal__close"
+                onClick={toggle}
+              >X</button>}
           </Modal.Toggler>
           {this.props.children}
         </Modal.Body>
