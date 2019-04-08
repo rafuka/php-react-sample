@@ -8,7 +8,6 @@ class Teams extends Component {
     teams: [],
     error: false,
     loadedTeams: false,
-    modalOpen: false,
     addTeamData: {
       name: '',
       imgUrl: ''
@@ -38,18 +37,38 @@ class Teams extends Component {
     }
   }
 
-  toggleAddModal = e => {
-    e.preventDefault();
-    let visible = this.state.modalOpen;
-    this.setState({ modalOpen: !visible });
+  toggleAddTeamModal = (e, data) => {
+
   }
 
-  handleAdd = async (e, data) => {
-    console.log('Adding!');
-    console.log(data);
-    let res = await fetch('http://localhost:3030/teams/create', {
+  handleTeamAdd = async (e) => {
+    const { addTeamData } = this.state;
+    try {
+      let res = await fetch('http://localhost:3030/teams/create', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(addTeamData)
+      });
 
-    });
+      let jsonData = await res.json();
+      if (jsonData.error) {
+        let error = new Error();
+        error.status = jsonData.error.status || 500;
+        error.message = jsonData.error.message || "There was an error fetching the data";
+        throw error;
+      }
+      else {
+        
+      }
+      console.log('server response:', jsonData);
+    }
+    catch(err) {
+      console.error(err);
+      this.setState({ error: err });
+    }
+    
   }
 
   handleInputChange = e => {
@@ -59,7 +78,7 @@ class Teams extends Component {
     if (name === "team-name") addTeamData.name = value;
     if (e.target.name === "team-img-url") addTeamData.imgUrl = value;
 
-    this.setState({ addTeamData }, console.log(this.state.addTeamData));
+    this.setState({ addTeamData });
   }
 
   render() {
@@ -68,8 +87,6 @@ class Teams extends Component {
       return <Error message={error.message ? error.message : null} />
     }
     if (loadedTeams) {
-      const { teams } = this.state;
-
       return (
         <React.Fragment>
           <h2 className="page-title">Teams</h2>
@@ -83,7 +100,7 @@ class Teams extends Component {
             ))}
           </div>
 
-          <Modal
+          <Modal onToggle={this.toggleAddTeamModal}
             toggler={({ toggle }) => (
               <button
                 className="team-add-btn"
@@ -126,6 +143,14 @@ class Teams extends Component {
                     onChange={this.handleInputChange}
                   />
                 </div>
+              </div>
+              <div className="team-add__options">
+                <button
+                  className="team-add__add-btn"
+                  onClick={this.handleTeamAdd}
+                >
+                  Add
+                </button>
               </div>
             </div>
           </Modal>
