@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Error from '../../error/Error';
 import Modal from '../../modal/Modal';
+import Button from '../../button/Button';
 import './teams.scss';
 
 class Teams extends Component {
@@ -123,12 +124,12 @@ class Teams extends Component {
 
           <Modal onToggle={this.toggleAddTeamModal}
             toggler={({ toggle }) => (
-              <button
+              <Button
                 className="team-add-btn"
                 onClick={toggle}
-              >
-                +
-              </button>
+                icon="plus"
+                rounded
+              />
             )}
           >
             <div className="team-add">
@@ -139,7 +140,7 @@ class Teams extends Component {
                     className="team-add__input-label"
                     htmlFor="team-name"
                   >
-                    Team Name
+                    Team Name (required)
                 </label>
                   <input
                     id="team-name"
@@ -196,19 +197,23 @@ class Teams extends Component {
       : './football.png';
 
     return (
-      <label className="team-card-wrapper">
+      <div className="team-card-wrapper">
         <div className="team-card">
           <div className="front">
             <img src={teamImage} alt="Team Logo" className="team-card__logo" />
             <p className="team-card__name">{teamName}</p>
           </div>
           <div className="back">
-            <p>This is the back</p>
-            <button>Delete</button>
-            <button>Edit</button>
+            <div className="team-card__info">
+              this is some info
+            </div>
+            <div className="team-card__options">
+              <Button text="Delete" className="delete-btn" danger icon="trash"/>
+              <Button text="Edit" className="edit-btn" icon="edit"/>
+            </div>     
         </div>
         </div>
-      </label>
+      </div>
     );
   };
 }

@@ -18,11 +18,7 @@
 
 .team-card {
   box-shadow: 0px 0px 20px -5px rgba(0,0,0,0.4);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
   height: 270px;
-  justify-content: space-between;
   margin: 15px;
   position: relative;
   transform-style: preserve-3d;
@@ -32,6 +28,9 @@
   .front, .back {
     backface-visibility: hidden;
     border-radius: 7px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     padding: 15px;
     position: absolute;
     transition: all .4s ease;
@@ -62,15 +61,24 @@
     margin-top: 20px;
     text-align: center;
   }
+
+  &__info {
+
+  }
+
+  &__options {
+    display: flex;
+    justify-content: space-between;
+  }
 }
 
 .team-add-btn {
-  background-color: lightblue;
-  border-radius: 100%;
   bottom: 35px;
-  box-shadow: 0px 1px 10px -1px rgba(0,0,0,0.7);
+  box-shadow: 0px 2px 10px -1px rgba(0,0,0,0.7);
   cursor: pointer;
+  font-size: 1.3em;
   height: 50px;
+  padding: 0px;
   position: fixed;
   right: 15px;
   transition: all .3s ease;

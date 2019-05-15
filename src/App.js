@@ -5,6 +5,10 @@ import Teams from './components/pages/teams/Teams';
 import Calendar from './components/pages/calendar/Calendar';
 import Error from './components/error/Error';
 import Footer from './components/footer/Footer';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faPlus, faTrash, faEdit);
 
 class App extends Component {
   render() {
