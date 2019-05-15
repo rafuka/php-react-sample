@@ -33,7 +33,8 @@ class Teams extends Component {
         addTeamData: {
           name: '',
           imgUrl: ''
-        }},
+        }
+      },
         this.getTeams
       );
     }
@@ -94,7 +95,7 @@ class Teams extends Component {
         return jsonData;
       }
     }
-    catch(err) {
+    catch (err) {
       console.error(err);
       this.setState({ error: err });
     }
@@ -115,6 +116,7 @@ class Teams extends Component {
                 key={team.id}
                 teamName={team.name}
                 teamImages={team.images}
+                teamId={team.id}
               />
             ))}
           </div>
@@ -188,16 +190,25 @@ class Teams extends Component {
   }
 
   static Card = props => {
-    const { teamName, teamImages } = props;
+    const { teamName, teamImages, teamId } = props;
     const teamImage = teamImages && teamImages.length > 0
       ? teamImages[0]
       : './football.png';
 
     return (
-      <div className="team-card">
-        <img src={teamImage} alt="Team Logo" className="team-card__logo" />
-        <p className="team-card__name">{teamName}</p>
-      </div>
+      <label className="team-card-wrapper">
+        <div className="team-card">
+          <div className="front">
+            <img src={teamImage} alt="Team Logo" className="team-card__logo" />
+            <p className="team-card__name">{teamName}</p>
+          </div>
+          <div className="back">
+            <p>This is the back</p>
+            <button>Delete</button>
+            <button>Edit</button>
+        </div>
+        </div>
+      </label>
     );
   };
 }
