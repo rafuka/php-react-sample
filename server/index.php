@@ -5,7 +5,7 @@ include_once("./models/teams.php");
 include_once("./models/calendar.php");
 
 header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
-header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, PATCH, OPTIONS');
 header('Access-Control-Max-Age: 1000');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
@@ -34,8 +34,8 @@ $action = $uri[1];
 
 if ($resource == '/teams') {
   if ($method == 'GET') {
-    $teams_with_images = $teams->getAllWithImages();
-    echo json_encode($teams_with_images);
+    $teams_data = $teams->getAll();
+    echo json_encode($teams_data);
   }
   else if ($method == 'POST') {
     $json = file_get_contents('php://input'); // Returns data from the request body
@@ -75,9 +75,29 @@ if ($resource == '/teams') {
     $json = file_get_contents('php://input'); // Returns data from the request body
     $team_data = json_decode($json, true);
 
-    $qr = $teams->delete($team_data["teamId"]);
+    $qr = $teams->delete($team_data["id"]);
     if ($qr) {
-      echo '{"success":"Deleted team ' . $team_data["teamId"] . ' successfully."}';
+      echo '{"success":"Deleted team ' . $team_data["id"] . ' successfully."}';
+    }
+    else {
+      $err = array(
+        "error" => array(
+          "status" => "404",
+          "message" => "Team with id " . $team_data["id"] . " not found."
+        )
+      );
+  
+      echo json_encode($err);
+      exit();
+    }
+  }
+  else if ($method == 'PATCH') {
+    $json = file_get_contents('php://input'); // Returns data from the request body
+    $team_data = json_decode($json, true);
+
+    $qr = $teams->edit($team_data["id"], $team_data["name"], $team_data["logo"]);
+    if ($qr) {
+      echo '{"success":"Updated team successfully."}';
     }
     else {
       $err = array(
