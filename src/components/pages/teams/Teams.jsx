@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Error from '../../error/Error';
 import Modal from '../../modal/Modal';
 import Button from '../../button/Button';
+import TeamCard from '../../team-card/TeamCard';
 import './teams.scss';
 
 class Teams extends Component {
@@ -11,7 +12,7 @@ class Teams extends Component {
     loadedTeams: false,
     addTeamData: {
       name: '',
-      imgUrl: ''
+      logo: ''
     }
   }
 
@@ -19,8 +20,8 @@ class Teams extends Component {
     this.getTeams();
   }
 
-  toggleAddTeamModal = (e, data) => {
-
+  toggleEditTeamModal = (e, teamId, teamName, teamLogo) => {
+    console.log('editing', teamName, teamId);
   }
 
   handleTeamAdd = async (e) => {
@@ -28,31 +29,30 @@ class Teams extends Component {
     const teamCreated = await this.createTeam(addTeamData);
 
     if (teamCreated) {
-      console.log(teamCreated.success);
-
       this.setState({
         addTeamData: {
           name: '',
-          imgUrl: ''
+          logo: ''
         }
       },
         this.getTeams
       );
     }
+    else {
+
+    }
   }
 
   handleTeamDelete = async (e, teamId, teamName) => {
-    
     const data = {
-      teamId: teamId
+      id: teamId
     };
-    console.log('data', teamId);
+
     if (window.confirm("Are you sure you want to delete team " + teamName + "?")) {
       const deleted = await this.deleteTeam(data);
 
-      if (deleted) { 
-        console.log('BOOOOM');
-        this.setState({ loadedTeams: false}, this.getTeams);
+      if (deleted) {
+        this.setState({ loadedTeams: false }, this.getTeams);
       }
       else {
         console.error('problem deleting team');
@@ -60,8 +60,23 @@ class Teams extends Component {
     }
   }
 
-  handleTeamEdit = (e, teamId) => {
-    console.log('bam', teamId);
+  handleTeamEdit = async (e, teamId, newName, newLogo) => {
+    console.log('edit', teamId, newName, newLogo);
+    const data = {
+      id: teamId,
+      name: newName,
+      logo: newLogo
+    };
+
+    const edited = await this.editTeam(data);
+
+    if (edited) {
+      console.log('EDITED');
+      this.setState({ loadedTeams: false }, this.getTeams);
+    }
+    else {
+      console.error('problem updating team');
+    }
   }
 
   handleInputChange = e => {
@@ -69,7 +84,7 @@ class Teams extends Component {
     let { addTeamData } = this.state;
 
     if (name === "team-name") addTeamData.name = value;
-    if (e.target.name === "team-img-url") addTeamData.imgUrl = value;
+    if (name === "team-logo") addTeamData.logo = value;
 
     this.setState({ addTeamData });
   }
@@ -78,7 +93,7 @@ class Teams extends Component {
     try {
       const res = await fetch('http://localhost:3030/teams/');
       const jsonData = await res.json();
-      console.log('teams', jsonData, 'type', typeof jsonData);
+
       if (jsonData.error) {
         let error = new Error();
         error.status = jsonData.error.status || 500;
@@ -154,6 +169,35 @@ class Teams extends Component {
     }
   }
 
+  editTeam = async data => {
+    console.log(JSON.stringify(data));
+    try {
+      let res = await fetch('http://localhost:3030/teams', {
+        method: 'PATCH',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data)
+      });
+
+      let resData = await res.json();
+
+      if (resData.error) {
+        let error = new Error();
+        error.status = resData.error.status || 500;
+        error.message = resData.error.message || "There was an error while attempting to update the team.";
+        throw error;
+      }
+      else {
+        return resData;
+      }
+    }
+    catch (err) {
+      console.error(err);
+      this.setState({ error: err });
+    }
+  }
+
   render() {
     const { teams, loadedTeams, error } = this.state;
 
@@ -166,15 +210,16 @@ class Teams extends Component {
           <h2 className="page-title">Teams</h2>
           <div className="teams-container">
             {teams.length > 0 ? teams.map(team => (
-              <Teams.Card
+              <TeamCard
                 key={team.id}
                 teamName={team.name}
-                teamImages={team.images}
+                teamLogo={team.logo}
                 teamId={team.id}
                 onDelete={this.handleTeamDelete}
                 onEdit={this.handleTeamEdit}
+                onToggleModal={this.toggleEditTeamModal}
               />
-            )): null}
+            )) : null}
           </div>
 
           <Modal onToggle={this.toggleAddTeamModal}
@@ -209,16 +254,16 @@ class Teams extends Component {
                 <div className="team-add__input">
                   <label
                     className="team-add__input-label"
-                    htmlFor="team-img-url"
+                    htmlFor="team-logo"
                   >
                     Logo Url
                 </label>
                   <input
-                    id="team-img-url"
+                    id="team-logo"
                     className="team-add__input-field"
                     type="text"
-                    name="team-img-url"
-                    value={this.state.addTeamData.imgUrl}
+                    name="team-logo"
+                    value={this.state.addTeamData.logo}
                     onChange={this.handleInputChange}
                   />
                 </div>
@@ -244,51 +289,6 @@ class Teams extends Component {
       );
     }
   }
-
-  static Card = props => {
-    const {
-      teamName,
-      teamImages,
-      teamId,
-      onDelete,
-      onEdit
-    } = props;
-
-    const teamImage = teamImages && teamImages.length > 0
-      ? teamImages[0]
-      : './football.png';
-
-    return (
-      <div className="team-card-wrapper">
-        <div className="team-card">
-          <div className="front">
-            <img src={teamImage} alt="Team Logo" className="team-card__logo" />
-            <p className="team-card__name">{teamName}</p>
-          </div>
-          <div className="back">
-            <div className="team-card__info">
-              this is some info
-            </div>
-            <div className="team-card__options">
-              <Button
-                className="delete-btn"
-                text="Delete"
-                danger
-                icon="trash"
-                onClick={e => onDelete(e, teamId, teamName)}
-              />
-              <Button
-                className="edit-btn"
-                text="Edit"
-                icon="edit"
-                onClick={e => onEdit(e, teamId)}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 }
 
 export default Teams;
