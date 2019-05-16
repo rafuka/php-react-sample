@@ -26,84 +26,76 @@ if (sizeof($path) < 1) {
 }
 
 $teams = new Teams($db);
-
+$calendar = new Calendar();
 $method = $_SERVER["REQUEST_METHOD"];
 $uri = $path[0];
 $resource = $uri[0];
+$action = $uri[1];
 
-
-if ($method == "GET") {
-  if ($resource == "/teams") {
+if ($resource == '/teams') {
+  if ($method == 'GET') {
     $teams_with_images = $teams->getAllWithImages();
     echo json_encode($teams_with_images);
-  
   }
-  else if ($resource == "/calendar") {
-    $team_names = $teams->getNames();
-    $calendar = (new Calendar($team_names))->getCalendar();
-    echo json_encode($calendar);
-  }
-  else {
-    $err = array(
-      "error" => array(
-        "status" => "404",
-        "message" => "Bad fetch URL. Resource not found."
-      )
-    );
-  
-    echo json_encode($err);
-    exit();
-  }
-}
-else if ($method == "POST") {
-  $action = $uri[1];
-  if ($action != NULL) {
-    if ($action == "/create") {
-      // Takes data from the request
-      $json = file_get_contents('php://input');
-      $team_data = json_decode($json, true);
-      
-      try {
-        $team_names = $teams->getNames();
-        if (in_array($team_data["name"], $team_names)) {
-          $err = array(
-            "error" => array(
-              "status" => "500",
-              "message" => "A team already exists with that name."
-            )
-          );
-        
-          echo json_encode($err);
-          exit();
-        }
-        else {
-          $qr = $teams->create($team_data["name"], $team_data["imgUrl"]);
-          
-        }
-        
-      }
-      catch(Exception $e) {
+  else if ($method == 'POST') {
+    $json = file_get_contents('php://input'); // Returns data from the request body
+    $team_data = json_decode($json, true);
+    
+    try {
+      $team_names = $teams->getNames();
+      if (in_array($team_data["name"], $team_names)) {
         $err = array(
           "error" => array(
             "status" => "500",
-            "message" => "There was a problem reading the database."
+            "message" => "A team already exists with that name."
           )
         );
       
         echo json_encode($err);
         exit();
       }
-
-      if ($qr) {
+      else {
+        $qr = $teams->create($team_data["name"], $team_data["imgUrl"]);
         echo '{"success":"Team ' . $team_data["name"] . ' created successfully!"}';
       }
+    }
+    catch(Exception $e) {
+      $err = array(
+        "error" => array(
+          "status" => "500",
+          "message" => "There was a problem reading the database."
+        )
+      );
+    
+      echo json_encode($err);
+      exit();
+    }
+  }
+  else if ($method == 'DELETE') {
+    $json = file_get_contents('php://input'); // Returns data from the request body
+    $team_data = json_decode($json, true);
+
+    $qr = $teams->delete($team_data["teamId"]);
+    if ($qr) {
+      echo '{"success":"Deleted team ' . $team_data["teamId"] . ' successfully."}';
+    }
+    else {
+      $err = array(
+        "error" => array(
+          "status" => "404",
+          "message" => "Team with id " . $team_data["teamId"] . " not found."
+        )
+      );
+  
+      echo json_encode($err);
+      exit();
     }
   }
   else {
     $err = array(
       "error" => array(
         "status" => "404",
-        "message" => "Bad URL. No action provided."
+        "message" => "Bad URL. Wrong method for resource '" . $resource . "'."
       )
     );
   
@@ -111,5 +103,38 @@ else if ($method == "POST") {
     exit();
   }
 }
+else if ($resource == '/calendar') {
+  if ($method == 'GET') {
+    echo json_encode($calendar->getCalendar());
+  }
+  else if ($method == 'POST') {
+    $json = file_get_contents('php://input'); // Returns data from the request body
+    $team_data = json_decode($json, true);
+    $calendar->setTeams($team_data);
+  }
+  else {
+    $err = array(
+      "error" => array(
+        "status" => "404",
+        "message" => "Bad URL. Wrong method for resource '" . $resource . "'."
+      )
+    );
+
+    echo json_encode($err);
+    exit();
+  }
+}
+else {
+  $err = array(
+    "error" => array(
+      "status" => "404",
+      "message" => "Bad URL. Resource '" . $resource . "' not found."
+    )
+  );
+
+  echo json_encode($err);
+  exit();
+}
+
 ?>
 

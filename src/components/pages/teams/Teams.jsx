@@ -41,6 +41,29 @@ class Teams extends Component {
     }
   }
 
+  handleTeamDelete = async (e, teamId, teamName) => {
+    
+    const data = {
+      teamId: teamId
+    };
+    console.log('data', teamId);
+    if (window.confirm("Are you sure you want to delete team " + teamName + "?")) {
+      const deleted = await this.deleteTeam(data);
+
+      if (deleted) { 
+        console.log('BOOOOM');
+        this.setState({ loadedTeams: false}, this.getTeams);
+      }
+      else {
+        console.error('problem deleting team');
+      }
+    }
+  }
+
+  handleTeamEdit = (e, teamId) => {
+    console.log('bam', teamId);
+  }
+
   handleInputChange = e => {
     const { name, value } = e.target;
     let { addTeamData } = this.state;
@@ -55,7 +78,7 @@ class Teams extends Component {
     try {
       const res = await fetch('http://localhost:3030/teams/');
       const jsonData = await res.json();
-
+      console.log('teams', jsonData, 'type', typeof jsonData);
       if (jsonData.error) {
         let error = new Error();
         error.status = jsonData.error.status || 500;
@@ -74,7 +97,7 @@ class Teams extends Component {
     }
   }
 
-  createTeam = async (data) => {
+  createTeam = async data => {
     try {
       let res = await fetch('http://localhost:3030/teams/create', {
         method: 'POST',
@@ -102,8 +125,38 @@ class Teams extends Component {
     }
   }
 
+  deleteTeam = async data => {
+    console.log(JSON.stringify(data));
+    try {
+      let res = await fetch('http://localhost:3030/teams', {
+        method: 'DELETE',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data)
+      });
+
+      let resData = await res.json();
+
+      if (resData.error) {
+        let error = new Error();
+        error.status = resData.error.status || 500;
+        error.message = resData.error.message || "There was an error while attempting to delete the team.";
+        throw error;
+      }
+      else {
+        return resData;
+      }
+    }
+    catch (err) {
+      console.error(err);
+      this.setState({ error: err });
+    }
+  }
+
   render() {
     const { teams, loadedTeams, error } = this.state;
+
     if (error) {
       return <Error message={error.message ? error.message : null} />
     }
@@ -112,14 +165,16 @@ class Teams extends Component {
         <React.Fragment>
           <h2 className="page-title">Teams</h2>
           <div className="teams-container">
-            {teams.map(team => (
+            {teams.length > 0 ? teams.map(team => (
               <Teams.Card
                 key={team.id}
                 teamName={team.name}
                 teamImages={team.images}
                 teamId={team.id}
+                onDelete={this.handleTeamDelete}
+                onEdit={this.handleTeamEdit}
               />
-            ))}
+            )): null}
           </div>
 
           <Modal onToggle={this.toggleAddTeamModal}
@@ -169,12 +224,12 @@ class Teams extends Component {
                 </div>
               </div>
               <div className="team-add__options">
-                <button
+                <Button
                   className="team-add__add-btn"
+                  text="Add"
+                  icon="plus"
                   onClick={this.handleTeamAdd}
-                >
-                  Add
-                </button>
+                />
               </div>
             </div>
           </Modal>
@@ -191,7 +246,14 @@ class Teams extends Component {
   }
 
   static Card = props => {
-    const { teamName, teamImages, teamId } = props;
+    const {
+      teamName,
+      teamImages,
+      teamId,
+      onDelete,
+      onEdit
+    } = props;
+
     const teamImage = teamImages && teamImages.length > 0
       ? teamImages[0]
       : './football.png';
@@ -208,10 +270,21 @@ class Teams extends Component {
               this is some info
             </div>
             <div className="team-card__options">
-              <Button text="Delete" className="delete-btn" danger icon="trash"/>
-              <Button text="Edit" className="edit-btn" icon="edit"/>
-            </div>     
-        </div>
+              <Button
+                className="delete-btn"
+                text="Delete"
+                danger
+                icon="trash"
+                onClick={e => onDelete(e, teamId, teamName)}
+              />
+              <Button
+                className="edit-btn"
+                text="Edit"
+                icon="edit"
+                onClick={e => onEdit(e, teamId)}
+              />
+            </div>
+          </div>
         </div>
       </div>
     );

@@ -30,14 +30,20 @@ class Teams {
     
     $teams_with_images = array();
 
-
+    $i = 0;
     while ($row = $query_results->fetch_assoc()) {
       $id = $row["id"];
       $name = $row["name"];
       $url = $row["url"];
 
-      $i = $id - 1;
-      if (!$teams_with_images[$i]) {
+      $team_is_set = False;
+      foreach ($teams_with_images as $key => $val) {
+        if ($val["id"] == $id) {
+          $team_is_set = $key;
+        }
+      }
+
+      if ($team_is_set == False) {
         $teams_with_images[$i] = array(
           "id" => $id,
           "name" => $name,
@@ -45,9 +51,10 @@ class Teams {
         );
 
         if ($url != NULL) array_push($teams_with_images[$i]["images"], $url);
+        $i = $i + 1;
       }
       else {
-        array_push($teams_with_images[$i]["images"], $url);
+        array_push($teams_with_images[$team_is_set]["images"], $url);
       }
     }
     
@@ -88,6 +95,20 @@ class Teams {
     $this->checkForQueryErrors($query, $query_results);
 
     return $query_results;
+  }
+
+  public function delete($id) {
+    $query = "DELETE FROM `teams` WHERE `id`=" . $id;
+    $query_results = $this->db->query($query);
+
+    $this->checkForQueryErrors($query, $query_results);
+
+    if ($this->db->affected_rows == 1){
+      return True;
+    }
+    else {
+      return False;
+    }
   }
 
   private function checkForQueryErrors($query, $query_results) {
