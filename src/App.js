@@ -6,9 +6,9 @@ import Calendar from './components/pages/calendar/Calendar';
 import Error from './components/error/Error';
 import Footer from './components/footer/Footer';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPlus, faTrash, faEdit, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrash, faEdit, faCheck, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faPlus, faTrash, faEdit, faCheck);
+library.add(faPlus, faTrash, faEdit, faCheck, faSearch, faTimes);
 
 class App extends Component {
   render() {
