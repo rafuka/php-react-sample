@@ -37,16 +37,17 @@ class Teams {
     return $team_names;
   }
 
-  public function create($name, $image_url) {
-    $query = "INSERT INTO `teams` (`name`, `logo`) VALUES('" . $name . ", " . $image_url ."')";
+  public function create($name, $logo) {
+    $query = "INSERT INTO `teams` (`name`, `logo`) VALUES('" . $name . "', '" . $logo ."')";
     $query_results = $this->db->query($query);
 
     $this->checkForQueryErrors($query, $query_results);
+    
     return $query_results;
   }
 
-  public function edit($id, $name, $image_url) {
-    $query = "UPDATE `teams` SET `name`='" . $name . "', `logo`='" . $image_url . "' WHERE `id`=" . $id;
+  public function edit($id, $name, $logo) {
+    $query = "UPDATE `teams` SET `name`='" . $name . "', `logo`='" . $logo . "' WHERE `id`=" . $id;
     $query_results = $this->db->query($query);
 
     $this->checkForQueryErrors($query, $query_results);

@@ -17,7 +17,7 @@ if (sizeof($path) < 1) {
   $err = array(
     "error" => array(
       "status" => "404",
-      "message" => "Bad fetch URL"
+      "message" => "Bad URL"
     )
   );
 
@@ -26,11 +26,10 @@ if (sizeof($path) < 1) {
 }
 
 $teams = new Teams($db);
-$calendar = new Calendar();
+$calendar = new Calendar($teams->getNames());
 $method = $_SERVER["REQUEST_METHOD"];
 $uri = $path[0];
 $resource = $uri[0];
-$action = $uri[1];
 
 if ($resource == '/teams') {
   if ($method == 'GET') {
@@ -55,7 +54,7 @@ if ($resource == '/teams') {
         exit();
       }
       else {
-        $qr = $teams->create($team_data["name"], $team_data["imgUrl"]);
+        $qr = $teams->create($team_data["name"], $team_data["logo"]);
         echo '{"success":"Team ' . $team_data["name"] . ' created successfully!"}';
       }
     }
@@ -103,7 +102,7 @@ if ($resource == '/teams') {
       $err = array(
         "error" => array(
           "status" => "404",
-          "message" => "Team with id " . $team_data["teamId"] . " not found."
+          "message" => "Team with id " . $team_data["id"] . " not found."
         )
       );
   
@@ -130,6 +129,8 @@ else if ($resource == '/calendar') {
   else if ($method == 'POST') {
     $json = file_get_contents('php://input'); // Returns data from the request body
     $team_data = json_decode($json, true);
+
+    // TODO: test this endpoint
     $calendar->setTeams($team_data);
   }
   else {
