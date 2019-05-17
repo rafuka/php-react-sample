@@ -8,7 +8,7 @@
   transition: visibility 0s .5s, opacity .5s ease;
   visibility: hidden;
   width: 100%;
-  z-index: 2;
+  z-index: 10;
 
   &.visible {
     opacity: 1;
@@ -17,7 +17,7 @@
 
     .modal__container {
       opacity: 1;
-      top: 0px;
+      top: 50px;
     }
   }
 
@@ -30,15 +30,22 @@
     opacity: 0;
     padding: 20px;
     position: relative;
-    top: 50px;
+    top: 120px;
     transition: opacity .3s ease, top .5s ease;
     width: 90%;
   }
 
   &__close {
+    background-color: transparent;
     cursor: pointer;
+    color: #333;
+    font-size: 20px;
     position: absolute;
     right: 15px;
     top: 15px;
+
+    &:hover {
+      color: #555;
+    }
   }
 }

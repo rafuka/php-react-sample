@@ -3,6 +3,7 @@ import Error from '../../error/Error';
 import Modal from '../../modal/Modal';
 import Button from '../../button/Button';
 import TeamCard from '../../team-card/TeamCard';
+import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import './teams.scss';
 
 class Teams extends Component {
@@ -13,7 +14,9 @@ class Teams extends Component {
     addTeamData: {
       name: '',
       logo: ''
-    }
+    },
+    teamSearch: '',
+    searchResult: []
   }
 
   componentDidMount() {
@@ -89,6 +92,27 @@ class Teams extends Component {
     this.setState({ addTeamData });
   }
 
+  handleSearch = e => {
+    let { value } = e.target;
+    if (value[0] === ' ') value = value.trim();
+
+    this.setState({ teamSearch: value }, () => this.searchTeams(value))
+  }
+
+  searchTeams = value => {
+    if (value !== '') {
+      const { teams } = this.state;
+      const searchResult = teams.filter(team =>
+        team.name.toLowerCase().includes(value.toLowerCase())
+      );
+
+      this.setState({ searchResult: searchResult });
+    }
+    else {
+      this.setState({ searchResult: [...this.state.teams] });
+    }
+  }
+
   getTeams = async () => {
     try {
       const res = await fetch('http://localhost:3030/teams/');
@@ -102,8 +126,8 @@ class Teams extends Component {
       }
       else {
         setTimeout(() => { // Just for the thrills
-          this.setState({ teams: jsonData, loadedTeams: true });
-        }, (Math.random() * 1000) + 500);
+          this.setState({ teams: jsonData, loadedTeams: true, searchResult: jsonData });
+        }, (Math.random() * 1000) + 1000);
       }
     }
     catch (err) {
@@ -113,8 +137,9 @@ class Teams extends Component {
   }
 
   createTeam = async data => {
+
     try {
-      let res = await fetch('http://localhost:3030/teams/create', {
+      let res = await fetch('http://localhost:3030/teams', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
@@ -170,7 +195,7 @@ class Teams extends Component {
   }
 
   editTeam = async data => {
-    console.log(JSON.stringify(data));
+
     try {
       let res = await fetch('http://localhost:3030/teams', {
         method: 'PATCH',
@@ -199,95 +224,107 @@ class Teams extends Component {
   }
 
   render() {
-    const { teams, loadedTeams, error } = this.state;
+    const { loadedTeams, error, searchResult } = this.state;
 
     if (error) {
       return <Error message={error.message ? error.message : null} />
     }
-    if (loadedTeams) {
-      return (
-        <React.Fragment>
-          <h2 className="page-title">Teams</h2>
-          <div className="teams-container">
-            {teams.length > 0 ? teams.map(team => (
-              <TeamCard
-                key={team.id}
-                teamName={team.name}
-                teamLogo={team.logo}
-                teamId={team.id}
-                onDelete={this.handleTeamDelete}
-                onEdit={this.handleTeamEdit}
-                onToggleModal={this.toggleEditTeamModal}
-              />
-            )) : null}
+    return (
+      <main className="page">
+        <div className={`loading teams${loadedTeams ? ' done' : ''}`}>
+          <span className="loading__figure">
+            <Icon className="icon" icon="check" />
+          </span>
+        </div>
+        <div className="page__header">
+          <h2 className="page__title">Teams</h2>
+          <div className="team-search">
+            <input
+              id="team-search"
+              className="team-search__input"
+              name="team-search"
+              type="text"
+              placeholder="Search for a team"
+              value={this.state.teamSearch}
+              onChange={this.handleSearch}
+            />
+            <Icon className="team-search__icon" icon="search" />
           </div>
+        </div>
 
-          <Modal onToggle={this.toggleAddTeamModal}
-            toggler={({ toggle }) => (
-              <Button
-                className="team-add-btn"
-                onClick={toggle}
-                icon="plus"
-                rounded
-              />
-            )}
-          >
-            <div className="team-add">
-              <p className="team-add__title">Adding new team</p>
-              <div className="team-add__data">
-                <div className="team-add__input">
-                  <label
-                    className="team-add__input-label"
-                    htmlFor="team-name"
-                  >
-                    Team Name (required)
+        <div className="teams-container">
+          {searchResult.length > 0 ? searchResult.map(team => (
+            <TeamCard
+              key={team.id}
+              teamName={team.name}
+              teamLogo={team.logo}
+              teamId={team.id}
+              onDelete={this.handleTeamDelete}
+              onEdit={this.handleTeamEdit}
+              onToggleModal={this.toggleEditTeamModal}
+            />
+          ))
+            : "No teams found."}
+        </div>
+
+        <Modal onToggle={this.toggleAddTeamModal}
+          toggler={({ toggle }) => (
+            <Button
+              className="team-add-btn"
+              onClick={toggle}
+              icon="plus"
+              rounded
+            />
+          )}
+        >
+          <div className="team-add">
+            <p className="team-add__title">Adding new team</p>
+            <div className="team-add__data">
+              <div className="team-add__input">
+                <label
+                  className="team-add__input-label"
+                  htmlFor="team-name"
+                >
+                  Team Name (required)
                 </label>
-                  <input
-                    id="team-name"
-                    className="team-add__input-field"
-                    type="text"
-                    name="team-name"
-                    value={this.state.addTeamData.name}
-                    onChange={this.handleInputChange}
-                  />
-                </div>
-                <div className="team-add__input">
-                  <label
-                    className="team-add__input-label"
-                    htmlFor="team-logo"
-                  >
-                    Logo Url
-                </label>
-                  <input
-                    id="team-logo"
-                    className="team-add__input-field"
-                    type="text"
-                    name="team-logo"
-                    value={this.state.addTeamData.logo}
-                    onChange={this.handleInputChange}
-                  />
-                </div>
+                <input
+                  id="team-name"
+                  className="team-add__input-field"
+                  type="text"
+                  name="team-name"
+                  value={this.state.addTeamData.name}
+                  onChange={this.handleInputChange}
+                />
               </div>
-              <div className="team-add__options">
-                <Button
-                  className="team-add__add-btn"
-                  text="Add"
-                  icon="plus"
-                  onClick={this.handleTeamAdd}
+              <div className="team-add__input">
+                <label
+                  className="team-add__input-label"
+                  htmlFor="team-logo"
+                >
+                  Logo Url
+                </label>
+                <input
+                  id="team-logo"
+                  className="team-add__input-field"
+                  type="text"
+                  name="team-logo"
+                  value={this.state.addTeamData.logo}
+                  onChange={this.handleInputChange}
                 />
               </div>
             </div>
-          </Modal>
-        </React.Fragment>
-      );
-    }
-    else {
-      return (
-        <div className="loading">
-          <p>Loading teams...</p>
-        </div>
-      );
-    }
+            <div className="team-add__options">
+              <Button
+                className="team-add__add-btn"
+                text="Add"
+                icon="plus"
+                onClick={this.handleTeamAdd}
+              />
+            </div>
+          </div>
+        </Modal>
+      </main>
+    );
   }
 }
 

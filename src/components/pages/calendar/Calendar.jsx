@@ -19,14 +19,16 @@ class Calendar extends Component {
 
   render() {
     return (
-      <React.Fragment>
-        <h2 className="page-title">Calendar</h2>
+      <main className="page">
+        <div className="page__header">
+          <h2 className="pagetitle">Calendar</h2>
+        </div>
         <div className="calendar">
         {this.state.calendar.map((dayMatches, num) =>(
           <Calendar.Day key={num} matches={dayMatches} dayNum={num + 1}/>
         ))}
         </div>
-      </React.Fragment>
+      </main>
     );
   }
 

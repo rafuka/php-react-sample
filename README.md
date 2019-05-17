@@ -18,3 +18,5 @@ The following are instruction to test this app locally:
 5. Update the `config.php` file on this repo to reflect the credentials and info for accessing the database. Specifically the user, database name, and user password.
 6. Run the `db.sql` script in the `server` folder to create the necessary tables and populate them with some data.
 
+sudo mysql -u <username> -p < db.sql
+

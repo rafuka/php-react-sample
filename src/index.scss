@@ -24,16 +24,161 @@ code {
     monospace;
 }
 
-.page-title {
-  display: block;
-  text-align: center;
-  margin: 30px auto;
+.page {
+  margin-top: 70px;
+  min-height: calc(100vh - 130px);
+  padding: 30px;
+
+  &__header {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+
+  &__title {
+
+  }
 }
 
 .loading {
   align-items: center;
+  background-color: white;
   display: flex;
   flex-direction: column;
   height: calc(100vh - 70px);
   justify-content: center;
+  left: 0px;
+  opacity: 1;
+  position: fixed;
+  top: 70px;
+  transition: visibility 2s, opacity 1s 1.5s ease;
+  visibility: visible;
+  width: 100%;
+  z-index: 2;
+  
+  &__figure {
+    align-items: center;
+    -webkit-animation: spin 1s linear infinite;
+    -moz-animation:    spin 1s linear infinite;
+    -o-animation:      spin 1s linear infinite;
+    animation:         spin 1s linear infinite;
+    border: 3px solid black;
+    border-top: 3px solid transparent;
+    border-radius: 50px;
+    display: flex;
+    height: 50px;
+    justify-content: center;
+    margin-bottom: 10px;
+    transition: background-color .3s ease;
+    width: 50px;
+
+    .icon {
+      color: white;
+      font-size: 20px;
+    }
+  }
+
+  &.teams {
+    &::after {
+      content: 'Loading teams...';
+    }
+  }
+
+  &.calendar {
+
+  }
+
+  &.done {
+    
+    visibility: hidden;
+    opacity: 0;
+
+    .loading__figure {
+      -webkit-animation: done 1.5s ease;
+      -moz-animation:    done 1.5s ease;
+      -o-animation:      done 1.5s ease;
+      animation:         done 1.5s ease;
+      background-color: black;
+      transform: rotate(0deg) scale(0);
+    }
+
+    &.teams {
+      &::after {
+        animation: blink .6s linear;
+        content: 'Loaded!';
+      }
+    }
+  }
+}
+
+@-webkit-keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(359deg); }
+}
+@-moz-keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(359deg); }
+}
+@-o-keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(359deg); }
+}
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(359deg); }
+}
+
+@-webkit-keyframes done {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1); }
+  60%  { transform: scale(1.5); }
+  100% { transform: scale(0); }
+}
+@-moz-keyframes done {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1); }
+  60%  { transform: scale(1.5); }
+  100% { transform: scale(0); }
+}
+@-o-keyframes done {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1); }
+  60%  { transform: scale(1.5); }
+  100% { transform: scale(0); }
+}
+@keyframes done {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1); }
+  60%  { transform: scale(1.5); }
+  100% { transform: scale(0); }
+}
+
+@-webkit-keyframes blink {
+  0%   { opacity: 0; }
+  30%  { opacity: 1; }
+  60%  { opacity: 0; }
+  90%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+@-moz-keyframes blink {
+  0%   { opacity: 0; }
+  30%  { opacity: 1; }
+  60%  { opacity: 0; }
+  90%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+@-o-keyframes blink {
+  0%   { opacity: 0; }
+  30%  { opacity: 1; }
+  60%  { opacity: 0; }
+  90%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+@keyframes blink {
+  0%   { opacity: 0; }
+  30%  { opacity: 1; }
+  60%  { opacity: 0; }
+  90%  { opacity: 1; }
+  100% { opacity: 1; }
 }

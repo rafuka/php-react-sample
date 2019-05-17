@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import './modal.scss';
 
 class Modal extends Component {
@@ -31,7 +32,7 @@ class Modal extends Component {
               <button
                 className="modal__close"
                 onClick={toggle}
-              >X</button>}
+              ><Icon icon="times" /></button>}
           </Modal.Toggler>
           {this.props.children}
         </Modal.Body>

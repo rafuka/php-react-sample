@@ -1,3 +1,24 @@
+.team-search {
+  margin-left: 30px;
+  position: relative;
+
+  &__input {
+    background-color: #eee;
+    border-radius: 5px;
+    font-size: 1.1em;
+    padding: 10px;
+    padding-right: 40px;
+  }
+
+  &__icon {
+    color: #aaa;
+    font-size: 20px;
+    position: absolute;
+    right: 10px;
+    top: calc(50% - 10px);
+  }
+}
+
 .teams-container {
   display: flex;
   flex-wrap: wrap;
