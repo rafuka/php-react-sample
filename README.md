@@ -1,4 +1,4 @@
-# Practice app with React, PHP and MySQL
+# Sample app with React, PHP and MySQL
 
 ## Required software
 
